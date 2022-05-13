@@ -6,6 +6,12 @@
 #include <iostream>
 #include "base.h"
 #include <string>
+#include "Class2.h"
+#include "Class3.h"
+#include "Class4.h"
+#include "Class5.h"
+#include "Class6.h"
+
 using namespace std;
 application::application(baseT * parent) : base(parent,"root")
 {}
@@ -14,22 +20,59 @@ void application::buildTreeObjects() {
 	string rootName, parA, chB;
 	cin >> rootName;
 	this->setrootName(rootName);
-	base *current = this;
 
-	do {
-		cin >> parA >> chB;
-		if (parA != chB) {
-			if (current->getrootName() == parA)
-				current = new baseT(current, chB);
-			else
-				current = new baseT(current->getParent(), chB);
+//	base *current = this;
+	int classN;
+	while (true) {
+
+		cin >> parA;
+		if (parA == "endtree") {
+			break;
 		}
-	} while (parA != chB);
+		cin >> chB>>classN;
+		base *curParA = findElem(parA);
+		k++;
+		switch (classN) {
+			case 2:
+				new Class2(curParA, chB);
+				break;
+			case 3:
+				new Class3(curParA, chB);
+				break;
+			case 4:
+				new Class4(curParA, chB);
+				break;
+			case 5:
+				new Class5(curParA, chB);
+				break;
+			case 6:
+				new Class6(curParA, chB);
+				break;
+			default:
+				break;
+		}
+	}
+//	} while (parA !="endtree");
+
 
 }
 int application::execApp() {
-	cout << getrootName();
-	print();
+	string obj_name;
+	int readiness;
+	while(cin >> obj_name){
+		/*if(obj_name=="3"){
+			break;
+		}*/
+		cin >> readiness;
+		findElem(obj_name)->setReadiness(readiness);
+
+
+	}
+	cout << "Object tree" << endl;
+	printTree();
+	cout<<endl<<"The tree of objects and their readiness"<<endl;
+	printReadiness();
+
 	return 0;
 }
 

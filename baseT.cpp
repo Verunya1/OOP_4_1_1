@@ -4,7 +4,6 @@
 
 #include "baseT.h"
 #include<iostream>
-#include "baseT.h"
-#include "Base.h"
+#include "base.h"
 using namespace std;
 baseT :: baseT(base * parent_, string headline_) : base(parent_, headline_) {}

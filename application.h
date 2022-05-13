@@ -12,11 +12,18 @@
 class application : public base {
 
 public:
-	application(baseT * parent);
+	application(baseT *parent);
 
 	void buildTreeObjects();
 
 	int execApp();
+
+	bool buildTreeObjectsMark = true;
+
+	string errorMessage = "";
+
+private:
+	int k=0;
 };
 
 
