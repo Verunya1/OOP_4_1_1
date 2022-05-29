@@ -13,64 +13,58 @@
 #include "Class6.h"
 
 using namespace std;
-application::application(baseT * parent) : base(parent,"root")
-{}
+
+application::application(base *parent) : base(parent, "root") {}
 
 void application::buildTreeObjects() {
 	string rootName, parA, chB;
 	cin >> rootName;
 	this->setrootName(rootName);
-
-//	base *current = this;
 	int classN;
-	while (true) {
 
+	do {
 		cin >> parA;
-		if (parA == "endtree") {
-			break;
+		if (parA != "endtree") {
+			cin >> chB >> classN;
+			base *curParA = findElem(parA);
+			switch (classN) {
+				case 2:
+					new Class2(curParA, chB);
+					break;
+				case 3:
+					new Class3(curParA, chB);
+					break;
+				case 4:
+					new Class4(curParA, chB);
+					break;
+				case 5:
+					new Class5(curParA, chB);
+					break;
+				case 6:
+					new Class6(curParA, chB);
+					break;
+				default:
+					break;
+			}
 		}
-		cin >> chB>>classN;
-		base *curParA = findElem(parA);
-		k++;
-		switch (classN) {
-			case 2:
-				new Class2(curParA, chB);
-				break;
-			case 3:
-				new Class3(curParA, chB);
-				break;
-			case 4:
-				new Class4(curParA, chB);
-				break;
-			case 5:
-				new Class5(curParA, chB);
-				break;
-			case 6:
-				new Class6(curParA, chB);
-				break;
-			default:
-				break;
-		}
-	}
-//	} while (parA !="endtree");
+	} while (parA != "endtree");
 
 
 }
+
 int application::execApp() {
 	string obj_name;
 	int readiness;
-	while(cin >> obj_name){
-		/*if(obj_name=="3"){
+	while (cin >> obj_name) {
+		if (obj_name == "3") {
 			break;
-		}*/
+		}
 		cin >> readiness;
 		findElem(obj_name)->setReadiness(readiness);
-
-
 	}
 	cout << "Object tree" << endl;
 	printTree();
-	cout<<endl<<"The tree of objects and their readiness"<<endl;
+	cout << endl << "The tree of objects and their readiness" << endl;
 	printReadiness();
 
 	return 0;

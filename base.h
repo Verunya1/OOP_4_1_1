@@ -29,7 +29,7 @@ public:
 
 	void printTree();
 
-	void printReadiness(int tab_level = 0);
+	void printReadiness();
 
 	void setReadiness(int setStatus);
 
@@ -39,10 +39,14 @@ public:
 	string getName();
 
 private:
+	int status;
 	string headline;
 	base *parent;
 	vector<base *> children;
-	int status = 0;
+
+
+
+
 
 };
 

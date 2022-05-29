@@ -7,23 +7,21 @@
 
 #include "base.h"
 #include <iostream>
-#include "baseT.h"
+
 
 class application : public base {
 
 public:
-	application(baseT *parent);
+	application(base *parent);
 
 	void buildTreeObjects();
 
 	int execApp();
 
-	bool buildTreeObjectsMark = true;
+	/*bool buildTreeObjectsMark = true;
 
-	string errorMessage = "";
+	string errorMessage = "";*/
 
-private:
-	int k=0;
 };
 
 
