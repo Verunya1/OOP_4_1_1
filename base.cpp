@@ -103,11 +103,11 @@ void base::printTree() {
 	if (this->getParent() == nullptr) {
 		cout << headline;
 	}
-	string tabs = "   ";
+	string tabs = "    ";
 	base *parent = this;
 	while (parent->getParent() != nullptr) {
 		parent = parent->getParent();
-		tabs = tabs + " " + " " + " " + " " + " ";
+		tabs = tabs + " " + " " + " " + " ";
 	}
 	for (auto ch: children) {
 		cout << endl << tabs << ch->getrootName();
@@ -147,8 +147,42 @@ void base::printReadiness() {
 		else { cout << " is ready"; }
 		child->printReadiness();
 	}
-
 }
+
+
+	base *base::getFindCoord(string path) {
+		if (path.empty()) return nullptr;
+		if (path[0] == '.') return this;
+		base *root = this;
+
+		if (path[0] == '/') {
+			while (root->getParent() != nullptr) root = root->getParent();
+
+		}
+		if (path.size() > 1 && path[0] == '/' && path[1] == '/') {
+			path.erase(0, 2);
+			return root->findElem(path);
+		} else if (path[0] == '/') {
+			if (path.size() == 1) return root;
+			path.erase(0, 1);
+		}
+
+
+		int indexTransition = path.find('/');
+		string nameSearchableChild = path.substr(0, indexTransition == -1 ?path.size() : indexTransition);
+		for (auto child: root->children) {
+			if (child->getrootName() == nameSearchableChild) {
+				if (indexTransition == -1) {
+					return child;
+				} else {
+					path.erase(0, indexTransition + 1);
+					return child->getFindCoord(path);
+				}
+			}
+		}
+		return nullptr;
+	}
+
 
 
 

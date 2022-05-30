@@ -37,6 +37,8 @@ public:
 
 	bool isReady();
 	string getName();
+	base *getFindCoord(std::string path);
+
 
 private:
 	int status;

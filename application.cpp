@@ -26,7 +26,15 @@ void application::buildTreeObjects() {
 		cin >> parA;
 		if (parA != "endtree") {
 			cin >> chB >> classN;
-			base *curParA = findElem(parA);
+			//base *curParA = findElem(parA);
+			base *curParA = getFindCoord(parA);
+			if (curParA == nullptr) {
+				this->buildSuccess = false;
+				errorMessage = "The head object " + parA
+				               + " is not found";
+				return;
+			}
+
 			switch (classN) {
 				case 2:
 					new Class2(curParA, chB);
@@ -53,20 +61,39 @@ void application::buildTreeObjects() {
 }
 
 int application::execApp() {
-	string obj_name;
-	int readiness;
-	while (cin >> obj_name) {
-		if (obj_name == "3") {
-			break;
-		}
-		cin >> readiness;
-		findElem(obj_name)->setReadiness(readiness);
-	}
 	cout << "Object tree" << endl;
 	printTree();
-	cout << endl << "The tree of objects and their readiness" << endl;
-	printReadiness();
-
+	if (buildSuccess) {
+		base *currentNode = this;
+		string command;
+		while (cin >> command && command != "END") {
+			string path;
+			cin >> path;
+			cout << endl;
+			if (command == "SET") {
+				base *newCurrentNode = currentNode -> getFindCoord(path);
+				if (newCurrentNode != nullptr) {
+					currentNode = newCurrentNode;
+					cout << "Object is set: " <<
+					     currentNode->getrootName();
+				} else {
+					cout << "Object is not found: " <<
+					     this->getrootName() << " " << path;
+				}
+			} else if (command == "FIND") {
+				base *foundObject = currentNode -> getFindCoord(path);
+				cout << path;
+				if (foundObject != nullptr) {
+					cout << "     " << "Object name: " <<foundObject->getrootName();
+				} else {
+					cout << "     " << "Object is not found";
+				}
+			}
+		}
+	} else {
+		cout << endl << errorMessage;
+	}
 	return 0;
-}
 
+
+}

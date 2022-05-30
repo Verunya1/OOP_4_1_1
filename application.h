@@ -10,7 +10,9 @@
 
 
 class application : public base {
-
+private:
+	bool buildSuccess = true;
+	string errorMessage = "";
 public:
 	application(base *parent);
 
