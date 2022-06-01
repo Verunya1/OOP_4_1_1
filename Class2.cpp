@@ -3,5 +3,10 @@
 //
 
 #include "Class2.h"
-Class2 ::Class2(base *parent, string headline): base(parent, headline) {}
+Class2 ::Class2(base *parent, string headline): base(parent, headline) {
+	number = 2;
+}
+
+
+
 

@@ -3,4 +3,6 @@
 //
 
 #include "Class4.h"
-Class4 ::Class4(base *parent, string headline): base(parent, headline) {}
+Class4 ::Class4(base *parent, string headline): base(parent, headline) {
+	number = 4;
+}

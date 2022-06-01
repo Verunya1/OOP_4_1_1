@@ -4,17 +4,14 @@
 
 #include "application.h"
 #include <iostream>
-#include "base.h"
 #include <string>
-#include "Class2.h"
-#include "Class3.h"
-#include "Class4.h"
-#include "Class5.h"
-#include "Class6.h"
+
 
 using namespace std;
 
-application::application(base *parent) : base(parent, "root") {}
+application::application(base *parent) : base(parent, "root") {
+	number = 1;
+}
 
 void application::buildTreeObjects() {
 	string rootName, parA, chB;
@@ -26,7 +23,6 @@ void application::buildTreeObjects() {
 		cin >> parA;
 		if (parA != "endtree") {
 			cin >> chB >> classN;
-			//base *curParA = findElem(parA);
 			base *curParA = getFindCoord(parA);
 			if (curParA == nullptr) {
 				this->buildSuccess = false;
@@ -56,44 +52,93 @@ void application::buildTreeObjects() {
 			}
 		}
 	} while (parA != "endtree");
-
-
+	string distributor_path;
+	string receiver_path;
+//	base *distributor;
+	base *currentNode;
+//	base *receiver;
+	base *sender;
+	while (true) {
+		cin >> distributor_path;
+		if (distributor_path == "end_of_connections") break;
+		cin >> receiver_path;
+		currentNode = (base *) (getFindCoord(distributor_path));
+		sender = (base *) (getFindCoord(receiver_path));
+		currentNode->setConnection(sender, signals[currentNode->getNumber() - 1], handlers[sender->getNumber() - 1]);
+	}
 }
+
 
 int application::execApp() {
 	cout << "Object tree" << endl;
 	printTree();
-	if (buildSuccess) {
-		base *currentNode = this;
-		string command;
-		while (cin >> command && command != "END") {
-			string path;
-			cin >> path;
-			cout << endl;
-			if (command == "SET") {
-				base *newCurrentNode = currentNode -> getFindCoord(path);
-				if (newCurrentNode != nullptr) {
-					currentNode = newCurrentNode;
-					cout << "Object is set: " <<
-					     currentNode->getrootName();
-				} else {
-					cout << "Object is not found: " <<
-					     this->getrootName() << " " << path;
-				}
-			} else if (command == "FIND") {
-				base *foundObject = currentNode -> getFindCoord(path);
-				cout << path;
-				if (foundObject != nullptr) {
-					cout << "     " << "Object name: " <<foundObject->getrootName();
-				} else {
-					cout << "     " << "Object is not found";
-				}
-			}
-		}
-	} else {
+	if (!buildSuccess) {
 		cout << endl << errorMessage;
+		return 0;
 	}
-	return 0;
+	setAllReady();
 
+	string command;
+	string path;
+	string msg;
+	base *sender;
+	int statusReady;
 
+	while (true) {
+		cin >> command;
+		if(command=="END"){
+			return 0;
+		}
+		cin >> path;
+		//currentNode = getFindCoord(path);
+
+		if (command == "EMIT") {
+			getline(cin, msg);
+			base *currentNode = getFindCoord(path);
+			if (currentNode) {
+				currentNode->emitSignal(signals[currentNode->getNumber() - 1], msg);
+			} else {
+				cout << endl << "Object " << path << " not found";
+			}
+		} else if (command == "SET_CONNECT") {
+			cin >> msg;
+			base *currentNode = getFindCoord(path);
+			base *sender = getFindCoord(msg);
+			if (!currentNode)
+				cout << endl << "Object " <<
+				     path << "not found";
+			if (!sender)
+				cout << endl << "Handler object "
+				     << msg << " not found";
+			if (currentNode && sender) {
+				currentNode->setConnection(sender,
+				                           signals[currentNode->getNumber() - 1],
+				                           handlers[sender->getNumber() -
+				                                    1]);
+			}
+		} else if (command == "DELETE_CONNECT") {
+			cin >> msg;
+			base *sender = getFindCoord(msg);
+			base *currentNode = getFindCoord(path);
+			if (currentNode == nullptr)
+				cout << endl << "Object " << path << "not found";
+			if (sender == nullptr)
+				cout << endl << "Handler object " << msg << " not found";
+			if (sender != nullptr && currentNode != nullptr)
+				currentNode->deleteConnection(sender, signals[currentNode->getNumber() - 1],
+				                              handlers[sender->getNumber() - 1]);
+		} else if (command == "SET_CONDITION") {
+			base *currentNode = getFindCoord(path);
+			cin >> statusReady;
+			if (currentNode) {
+				currentNode->setReadiness(statusReady);
+			} else {
+				cout << endl << "Object " << path << "not found";
+			}
+		} else {
+			cout << endl <<
+			     errorMessage;
+		}
+	}
 }
+

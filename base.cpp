@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 using namespace std;
 
@@ -76,17 +77,9 @@ base *base::findElem(const string &sT) {
 	return nullptr;
 }
 
-/*bool base::isReady() {
-	return status != 0;
-}*/
-void base::setReadiness(int setStatus) {
-	/*if (parent != nullptr && !(parent->isReady()))
-		return;
-	status = setStatus;
 
-	if (status == 0)
-		for (auto child: children)
-			child->setReadiness(0);*/
+void base::setReadiness(int setStatus) {
+
 	if ((this->getParent() != nullptr && this->getParent()->status != 0)
 	    || this->getParent() == nullptr) {
 		if (setStatus == 0) {
@@ -118,18 +111,6 @@ void base::printTree() {
 
 void base::printReadiness() {
 
-	/*if (this->getParent() != nullptr)
-		cout << endl;
-
-	for (int q = 0; q < tab_level; q++) cout << "    ";
-	cout << headline;
-
-
-	if (this->status) cout << " is ready";
-	else cout << " is not ready";
-
-	for (base *child: children) child->printReadiness(tab_level + 1);
-*/
 	if (this->getParent() == nullptr) {
 		cout << headline;
 		if (!this->status) { cout << " is not ready"; }
@@ -150,39 +131,129 @@ void base::printReadiness() {
 }
 
 
-	base *base::getFindCoord(string path) {
-		if (path.empty()) return nullptr;
-		if (path[0] == '.') return this;
-		base *root = this;
+base *base::getFindCoord(string path) {
+	if (path.empty()) return nullptr;
+	if (path[0] == '.') return this;
+	base *root = this;
 
-		if (path[0] == '/') {
-			while (root->getParent() != nullptr) root = root->getParent();
+	if (path[0] == '/') {
+		while (root->getParent() != nullptr) root = root->getParent();
 
-		}
-		if (path.size() > 1 && path[0] == '/' && path[1] == '/') {
-			path.erase(0, 2);
-			return root->findElem(path);
-		} else if (path[0] == '/') {
-			if (path.size() == 1) return root;
-			path.erase(0, 1);
-		}
-
-
-		int indexTransition = path.find('/');
-		string nameSearchableChild = path.substr(0, indexTransition == -1 ?path.size() : indexTransition);
-		for (auto child: root->children) {
-			if (child->getrootName() == nameSearchableChild) {
-				if (indexTransition == -1) {
-					return child;
-				} else {
-					path.erase(0, indexTransition + 1);
-					return child->getFindCoord(path);
-				}
-			}
-		}
-		return nullptr;
+	}
+	if (path.size() > 1 && path[0] == '/' && path[1] == '/') {
+		path.erase(0, 2);
+		return root->findElem(path);
+	} else if (path[0] == '/') {
+		if (path.size() == 1) return root;
+		path.erase(0, 1);
 	}
 
 
+	int indexTransition = path.find('/');
+	string nameSearchableChild = path.substr(0, indexTransition == -1 ? path.size() : indexTransition);
+	for (auto child: root->children) {
+		if (child->getrootName() == nameSearchableChild) {
+			if (indexTransition == -1) {
+				return child;
+			} else {
+				path.erase(0, indexTransition + 1);
+				return child->getFindCoord(path);
+			}
+		}
+	}
+	return nullptr;
+}
 
 
+void base::signal(string &str) {
+	if (status) {
+		cout << endl << "Signal from " << getPath();
+		str = str + " (class: "+ to_string(getNumber())+")";
+	}
+}
+
+void base::handler(string str) {
+	if (status) {
+		cout << endl << "Signal to " << getPath() << " Text: " << str;
+	}
+}
+
+int base::getNumber() {
+	return number;
+}
+
+string base::getPath() {
+	string path = "";
+	base *curr = this;
+	while (curr->getParent()) {
+		path = "/" + curr->getrootName() + path;
+		curr = curr->getParent();
+	}
+	return path.empty() ? "/" : path;
+}
+
+void base::setAllReady() {
+	this->setReadiness(1);
+	for (auto child: children)
+		child->setAllReady();
+}
+
+
+void base::setConnection(base *connectedBase, typeSignal signal, typeHandler handler) {
+	Connection newConnection;
+	newConnection.connectedBase = connectedBase;
+	newConnection.handler = handler;
+	newConnection.signal = signal;
+	for (auto connection: connections)
+		if (connection.connectedBase == connectedBase and connection.signal == signal and connection.handler == handler)
+			return;
+	connections.emplace_back(newConnection);
+}
+
+
+void base::deleteConnection(base *connectedBase, typeSignal signal, typeHandler
+handler) {
+	Connection shouldBeDeleted;
+	shouldBeDeleted.signal = signal;
+	shouldBeDeleted.handler = handler;
+	shouldBeDeleted.connectedBase = connectedBase;
+	for (int q = 0; q < connections.size(); q++)
+		if (connections[q].connectedBase == connectedBase and connections[q].signal== signal and connections[q].handler == handler){
+			connections.erase(connections.begin() + q);
+			return;
+		}
+}
+
+
+/*void base::setConnection(base *connectedBase, typeSignal signal, typeHandler handler)  {
+	Connection new_connection{
+			.connectedBase = connectedBase,
+			.signal = signal,
+			.handler = handler
+	};
+	for (auto connection: connections)
+		if (connection.connectedBase == connectedBase and connection.signal ==signal and connection.handler == handler)
+			return;
+	connections.push_back(new_connection);
+}
+void base::deleteConnection(base *connectedBase, typeSignal signal, typeHandler handler){
+	for (int q = 0; q < connections.size(); q++)
+		if (connections[q].connectedBase == connectedBase and connections[q].signal== signal and connections[q].handler == handler){
+			connections.erase(connections.begin() + q);
+			return;
+		}
+}*/
+
+
+
+void base::emitSignal(typeSignal signal, string &message) {
+	if (this->status) {
+		(this->*(signal))(message);
+		for (auto connection: connections) {
+			if (connection.signal == signal &&
+			    connection.connectedBase->status != 0) {
+				(connection.connectedBase->*(connection.handler))(message);
+			}
+		}
+	}
+}

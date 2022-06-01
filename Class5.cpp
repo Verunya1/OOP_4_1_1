@@ -3,4 +3,6 @@
 //
 
 #include "Class5.h"
-Class5 ::Class5(base *parent, string headline): base(parent, headline) {}
+Class5 ::Class5(base *parent, string headline): base(parent, headline) {
+	number = 5;
+}
