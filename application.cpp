@@ -52,18 +52,18 @@ void application::buildTreeObjects() {
 			}
 		}
 	} while (parA != "endtree");
-	string distributor_path;
-	string receiver_path;
+	string distributorPath;
+	string receiverPath;
 //	base *distributor;
 	base *currentNode;
 //	base *receiver;
 	base *sender;
 	while (true) {
-		cin >> distributor_path;
-		if (distributor_path == "end_of_connections") break;
-		cin >> receiver_path;
-		currentNode = (base *) (getFindCoord(distributor_path));
-		sender = (base *) (getFindCoord(receiver_path));
+		cin >> distributorPath;
+		if (distributorPath == "end_of_connections") break;
+		cin >> receiverPath;
+		currentNode = (base *) (getFindCoord(distributorPath));
+		sender = (base *) (getFindCoord(receiverPath));
 		currentNode->setConnection(sender, signals[currentNode->getNumber() - 1], handlers[sender->getNumber() - 1]);
 	}
 }
@@ -135,10 +135,11 @@ int application::execApp() {
 			} else {
 				cout << endl << "Object " << path << "not found";
 			}
-		} else {
-			cout << endl <<
-			     errorMessage;
 		}
 	}
 }
 
+/*else {
+			cout << endl <<
+			     errorMessage;
+		}*/

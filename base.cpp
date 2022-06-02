@@ -246,13 +246,13 @@ void base::deleteConnection(base *connectedBase, typeSignal signal, typeHandler 
 
 
 
-void base::emitSignal(typeSignal signal, string &message) {
+void base::emitSignal(typeSignal signal, string &msg) {
 	if (this->status) {
-		(this->*(signal))(message);
+		(this->*(signal))(msg);
 		for (auto connection: connections) {
 			if (connection.signal == signal &&
 			    connection.connectedBase->status != 0) {
-				(connection.connectedBase->*(connection.handler))(message);
+				(connection.connectedBase->*(connection.handler))(msg);
 			}
 		}
 	}
